@@ -220,4 +220,26 @@ internal class VoxelSideTest {
         assertFalse(a.touches(b))
         assertFalse(b.touches(a))
     }
+
+    @Test
+    fun removeOverlap1() {
+        val a = VoxelSideSet(setOf(VoxelSide(0.0f, 0.0f, 1.0f, 1.0f)))
+        val b = VoxelSide(0.0f, 0.0f, 1.0f, 1.0f)
+        assertEquals(a.removeOverlap(b), VoxelSideSet(setOf()))
+    }
+
+    @Test
+    fun removeOverlap2() {
+        val a = VoxelSideSet(setOf(VoxelSide(0.0f, 0.0f, 1.0f, 2.0f)))
+        val b = VoxelSide(0.0f, 1.0f, 1.0f, 3.0f)
+
+        assertEquals(
+            a.removeOverlap(b), VoxelSideSet(
+                setOf(
+                    VoxelSide(0.0f, 0.0f, 1.0f, 2.0f),
+                    VoxelSide(0.0f, 2.0f, 1.0f, 3.0f),
+                )
+            )
+        )
+    }
 }

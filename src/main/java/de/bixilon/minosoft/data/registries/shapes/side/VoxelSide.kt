@@ -43,7 +43,21 @@ data class VoxelSide(
             result += (this minus side).sides
         }
 
-        return VoxelSideSet(result)
+        return VoxelSideSet(result).removeDuplicates()
+    }
+
+    private fun VoxelSideSet.removeDuplicates(): VoxelSideSet {
+        val result = VoxelSideSet(mutableSetOf())
+
+
+        for (side in this) {
+            result.removeOverlap(side)
+        }
+
+        if (result != this) {
+            return result.removeDuplicates()
+        }
+        return this
     }
 
     infix operator fun minus(other: VoxelSide): VoxelSideSet {
@@ -96,5 +110,9 @@ data class VoxelSide(
         }
 
         return VoxelSideSet(setOf(VoxelSide(minX, minY, maxX, maxY)))
+    }
+
+    fun isCoveredBy(entry: VoxelSide): Boolean {
+        return entry.min.x <= min.x && entry.min.y <= min.y && entry.max.x >= max.x && entry.max.y >= max.y
     }
 }
