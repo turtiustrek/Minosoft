@@ -32,14 +32,36 @@ class VoxelSideSet(
 
         val array = this.sides.toTypedArray()
         for (i in 1 until sides.size) {
-            next += array[i - 1].compact(array[i])
+            loop@ for (side in array[i - 1].compact(array[i])) {
+                for (entry in next) {
+                    if (side.isCoveredBy(entry)) {
+                        continue@loop
+                    }
+                }
+                next += side
+            }
+
         }
         val set = VoxelSideSet(next)
 
-        if (next.size < this.sides.size) {
+        if (next != this.sides) {
             return set.compact()
         }
 
         return set
+    }
+
+    fun removeOverlap(side: VoxelSide): VoxelSideSet {
+        return this minus (side minus this)
+    }
+
+    override fun hashCode(): Int {
+        return sides.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (other !is VoxelSideSet) return false
+        if (hashCode() != other.hashCode()) return false
+        return sides == other.sides
     }
 }

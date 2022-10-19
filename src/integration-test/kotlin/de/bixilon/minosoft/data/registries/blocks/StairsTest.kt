@@ -30,7 +30,6 @@ class StairsTest : BlockTest<Block>() {
         super.retrieveBlock(MinecraftBlocks.OAK_STAIRS)
     }
 
-    @Test(enabled = false)
     fun testLightPropertiesNorth() {
         // ToDo: This test is correct, but failing
         block.withProperties(BlockProperties.FACING to Directions.NORTH).testLightProperties(0, true, true, false, booleanArrayOf(false, true, false, true, true, true))

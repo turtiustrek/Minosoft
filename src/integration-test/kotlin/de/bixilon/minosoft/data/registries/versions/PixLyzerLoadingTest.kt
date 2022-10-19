@@ -23,7 +23,7 @@ import de.bixilon.minosoft.test.ITUtil
 import org.testng.Assert
 import org.testng.annotations.Test
 
-@Test(groups = ["pixlyzer"], dependsOnGroups = ["version"], singleThreaded = false, threadPoolSize = 8, priority = Int.MAX_VALUE, timeOut = 10000L)
+@Test(groups = ["pixlyzer"], dependsOnGroups = ["version"], singleThreaded = false, threadPoolSize = 8, priority = Int.MAX_VALUE, timeOut = 100000000L)
 class PixLyzerLoadingTest {
 
     private fun VersionRegistry.test() {
@@ -95,6 +95,7 @@ class PixLyzerLoadingTest {
 
     fun `1_19_3`() {
         ITUtil.loadPixlyzerData("1.19.3").test()
+        println("")
     }
 
     fun latest() {
