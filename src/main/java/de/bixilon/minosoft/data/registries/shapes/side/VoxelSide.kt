@@ -1,6 +1,6 @@
 /*
  * Minosoft
- * Copyright (C) 2020-2022 Moritz Zwerger
+ * Copyright (C) 2020-2023 Moritz Zwerger
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
  *
@@ -21,98 +21,4 @@ data class VoxelSide(
 ) {
     constructor(minX: Float, minZ: Float, maxX: Float, maxZ: Float) : this(Vec2(minOf(minX, maxX), minOf(minZ, maxZ)), Vec2(maxOf(minX, maxX), maxOf(minZ, maxZ)))
     constructor(minX: Double, minZ: Double, maxX: Double, maxZ: Double) : this(Vec2(minOf(minX, maxX), minOf(minZ, maxZ)), Vec2(maxOf(minX, maxX), maxOf(minZ, maxZ)))
-
-
-    fun touches(set: VoxelSideSet): Boolean {
-        for (side in set) {
-            if (touches(side)) {
-                return true
-            }
-        }
-        return false
-    }
-
-    fun touches(other: VoxelSide): Boolean {
-        return !(this.min.x > other.max.x || other.min.x > this.max.x || this.min.y > other.max.y || other.min.y > this.max.y)
-    }
-
-    infix operator fun minus(set: VoxelSideSet): VoxelSideSet {
-        val result: MutableSet<VoxelSide> = mutableSetOf()
-
-        for (side in set.sides) {
-            result += (this minus side).sides
-        }
-
-        return VoxelSideSet(result).removeDuplicates()
-    }
-
-    private fun VoxelSideSet.removeDuplicates(): VoxelSideSet {
-        val result = VoxelSideSet(mutableSetOf())
-
-
-        for (side in this) {
-            result.removeOverlap(side)
-        }
-
-        if (result != this) {
-            return result.removeDuplicates()
-        }
-        return this
-    }
-
-    infix operator fun minus(other: VoxelSide): VoxelSideSet {
-        val result: MutableSet<VoxelSide> = mutableSetOf()
-
-
-        if (other.min.x > min.x && other.min.x < max.x) {
-            result += VoxelSide(min.x, min.y, other.min.x, max.y)
-        }
-        if (other.min.y > min.y && other.min.y < max.y) {
-            result += VoxelSide(min.x, min.y, max.x, other.min.y)
-        }
-
-        if (max.x > other.max.x) {
-            result += VoxelSide(other.max.x, min.y, max.x, max.y)
-        }
-        if (max.y > other.max.y) {
-            result += VoxelSide(min.x, other.max.y, max.x, max.y)
-        }
-
-
-        return VoxelSideSet(result)
-    }
-
-    infix fun or(other: VoxelSide): VoxelSide {
-        TODO("Not yet implemented")
-    }
-
-    fun compact(side: VoxelSide): VoxelSideSet {
-        var minX = min.x
-        var minY = min.y
-        var maxX = max.x
-        var maxY = max.y
-
-        var changes = 0
-        if (side.min.y == minY && side.min.x < minX) {
-            minX = side.min.x; changes++
-        } else if (side.min.x == minX && side.min.y < minY) {
-            minY = side.min.y;changes++
-        }
-
-        if (side.max.y == maxY && side.max.x > maxX) {
-            maxX = side.max.x;changes++
-        } else if (side.max.x == maxX && side.min.y > maxY) {
-            maxY = side.max.y;changes++
-        }
-
-        if (changes == 0) {
-            return VoxelSideSet(setOf(this, side))
-        }
-
-        return VoxelSideSet(setOf(VoxelSide(minX, minY, maxX, maxY)))
-    }
-
-    fun isCoveredBy(entry: VoxelSide): Boolean {
-        return entry.min.x <= min.x && entry.min.y <= min.y && entry.max.x >= max.x && entry.max.y >= max.y
-    }
 }

@@ -330,6 +330,7 @@ dependencies {
     implementation("org.reflections", "reflections", "0.10.2")
     implementation("it.unimi.dsi", "fastutil-core", "8.5.11")
     implementation("org.xeustechnologies", "jcl-core", "2.8")
+    implementation("org.locationtech.jts:jts-core:1.19.0")
 
 
     // ikonli

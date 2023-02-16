@@ -18,6 +18,11 @@ import de.bixilon.minosoft.data.direction.Directions
 import de.bixilon.minosoft.data.registries.shapes.VoxelShape
 import de.bixilon.minosoft.data.registries.shapes.side.VoxelSide
 import de.bixilon.minosoft.data.registries.shapes.side.VoxelSideSet
+import org.locationtech.jts.geom.Coordinate
+import org.locationtech.jts.geom.GeometryFactory
+import org.locationtech.jts.geom.LinearRing
+import org.locationtech.jts.geom.Polygon
+
 
 class DirectedProperty(
     private val directions: BooleanArray,
@@ -34,6 +39,7 @@ class DirectedProperty(
         private val TRUE = BooleanArray(Directions.SIZE) { true }
         private val FALSE = BooleanArray(Directions.SIZE) { false }
         private val FULL_SIDE = VoxelSide(0.0f, 0.0f, 1.0f, 1.0f)
+        private val FULL_SIDE_SET = VoxelSideSet(setOf(FULL_SIDE))
 
         private val BooleanArray.isSimple: Boolean?
             get() {
@@ -107,14 +113,34 @@ class DirectedProperty(
             if (side.isEmpty()) {
                 return false
             }
+            if (side == FULL_SIDE_SET) return true
 
-            val rest = FULL_SIDE - side
-            var compacted = rest.compact()
-            if (rest != compacted) {
-                compacted = FULL_SIDE - compacted
+            return isRectangleCompletelyCovered(otherRects = side)
+        }
+
+        fun isRectangleCompletelyCovered(primaryRect: VoxelSide = VoxelSide(0.0f, 0.0f, 1.0f, 1.0f), otherRects: VoxelSideSet): Boolean {
+            val primaryPoly = polygonFromRect(primaryRect)
+            var coveredArea = 0.0
+            for (rect in otherRects) {
+                val rectPoly = polygonFromRect(rect)
+                val overlapPoly = primaryPoly.intersection(rectPoly)
+                if (overlapPoly.area > 0.0) {
+                    coveredArea += overlapPoly.area
+                }
             }
+            return primaryPoly.area == coveredArea
+        }
 
-            return !FULL_SIDE.touches(compacted)
+        fun polygonFromRect(rect: VoxelSide): Polygon {
+            val fact = GeometryFactory()
+            val linear: LinearRing = GeometryFactory().createLinearRing(arrayOf(
+                Coordinate(rect.min.x.toDouble(), rect.min.y.toDouble()),
+                Coordinate(rect.min.x.toDouble(), rect.max.y.toDouble()),
+                Coordinate(rect.max.x.toDouble(), rect.max.y.toDouble()),
+                Coordinate(rect.max.x.toDouble(), rect.min.y.toDouble()),
+                Coordinate(rect.min.x.toDouble(), rect.min.y.toDouble()),
+            ))
+            return Polygon(linear, null, fact)
         }
     }
 }
