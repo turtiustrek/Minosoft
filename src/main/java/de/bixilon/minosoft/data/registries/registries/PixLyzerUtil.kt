@@ -49,15 +49,15 @@ object PixLyzerUtil {
         return data.data.read()
     }
 
-    fun loadPixlyzerData(version: Version, profile: ResourcesProfile): JsonObject {
+    fun loadPixlyzerData(profile: ResourcesProfile, version: Version): JsonObject {
         val pixlyzerHash = AssetsVersionProperties[version]?.pixlyzerHash ?: throw IllegalStateException("$version has no pixlyzer data available!")
 
         return verify(profile.source.pixlyzer, pixlyzerHash)
     }
 
-    fun loadRegistry(version: Version, profile: ResourcesProfile, latch: CountUpAndDownLatch): Registries {
+    fun loadRegistry(profile: ResourcesProfile, version: Version, latch: CountUpAndDownLatch): Registries {
         val registries = Registries()
-        val data = loadPixlyzerData(version, profile)
+        val data = loadPixlyzerData(profile, version)
 
         registries.load(version, data, latch)
 

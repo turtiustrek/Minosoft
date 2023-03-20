@@ -38,7 +38,7 @@ object ITUtil {
     fun loadPixlyzerData(version: Version): Registries {
         val registries = Registries(false)
 
-        val data = PixLyzerUtil.loadPixlyzerData(version, profile)
+        val data = PixLyzerUtil.loadPixlyzerData(profile, version)
 
         registries.load(version, data, CountUpAndDownLatch(0))
 
