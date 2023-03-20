@@ -29,7 +29,7 @@ import de.bixilon.minosoft.util.logging.LogMessageType
 
 @LoadPacket(threadSafe = false)
 class PositionRotationS2CP(buffer: PlayInByteBuffer) : PlayS2CPacket {
-    val position: Vec3d = buffer.readVec3d()
+    val position: Vec3d = Vec3d(buffer.readDoubleArray(3))
     val rotation: EntityRotation
     var onGround = false
     private var flags: Int = 0
