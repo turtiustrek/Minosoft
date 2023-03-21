@@ -24,9 +24,9 @@ import de.bixilon.minosoft.data.entities.data.EntityData
 import de.bixilon.minosoft.data.entities.data.EntityDataField
 import de.bixilon.minosoft.data.entities.entities.Entity
 import de.bixilon.minosoft.data.language.translate.Translatable
-import de.bixilon.minosoft.data.registries.identified.ResourceLocation
 import de.bixilon.minosoft.data.registries.effects.attributes.AttributeType
 import de.bixilon.minosoft.data.registries.effects.attributes.MinecraftAttributes
+import de.bixilon.minosoft.data.registries.identified.ResourceLocation
 import de.bixilon.minosoft.data.registries.item.items.SpawnEggItem
 import de.bixilon.minosoft.data.registries.registries.Registries
 import de.bixilon.minosoft.data.registries.registries.registry.RegistryItem
@@ -37,6 +37,7 @@ import de.bixilon.minosoft.util.KUtil.toResourceLocation
 import de.bixilon.minosoft.util.logging.Log
 import de.bixilon.minosoft.util.logging.LogLevels
 import de.bixilon.minosoft.util.logging.LogMessageType
+import de.bixilon.minosoft.util.nbt.tag.NBTUtil.get
 import java.lang.reflect.Modifier
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.companionObject
@@ -67,11 +68,11 @@ data class EntityType(
             check(registries != null) { "Registries is null!" }
             val factory = DefaultEntityFactories[resourceLocation]
 
-            data["meta"]?.toJsonObject()?.let {
+            data["meta", "data"]?.toJsonObject()?.let {
                 val fields: MutableMap<String, EntityDataField> = mutableMapOf()
                 val dataClass = DefaultEntityFactories.ABSTRACT_ENTITY_DATA_CLASSES[resourceLocation]?.companionObject ?: if (factory != null) factory::class else null
                 if (dataClass == null) {
-                    Log.log(LogMessageType.VERSION_LOADING, LogLevels.VERBOSE) { "Can not find class for entity data ($resourceLocation)" }
+                    Log.log(LogMessageType.VERSION_LOADING, LogLevels.VERBOSE) { "Can not find entity data class for $resourceLocation, fields $it" }
                     return@let
                 }
                 for (member in dataClass.members) {

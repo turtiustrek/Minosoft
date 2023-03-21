@@ -56,7 +56,7 @@ class SimpleRootModel(
             for ((conditionString, value) in data) {
                 val condition: MutableMap<BlockProperties, Any> = mutableMapOf()
 
-                if (conditionString.isNotBlank()) {
+                if (conditionString.isNotBlank() && conditionString != "normal") {
                     for (pair in conditionString.split(",")) {
                         val (propertyName, propertyStringValue) = pair.split("=")
 

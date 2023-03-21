@@ -64,7 +64,8 @@ class ModelLoader(
 
     fun loadBlockModel(name: ResourceLocation): GenericUnbakedModel {
         unbakedBlockModels[name]?.let { return it.unsafeCast() }
-        val data = assetsManager[name.model()].readJsonObject()
+        val modelName = if (context.connection.version.flattened || name.path.startsWith("block/")) name.model() else name.model("block/")
+        val data = assetsManager[modelName].readJsonObject()
 
         val parent = data["parent"]?.toResourceLocation()?.let { loadBlockModel(it) }
 
@@ -158,8 +159,12 @@ class ModelLoader(
 
     companion object {
 
-        fun ResourceLocation.model(): ResourceLocation {
-            return ResourceLocation(this.namespace, "models/" + this.path + ".json")
+        fun ResourceLocation.model(prefix: String? = null): ResourceLocation {
+            var path = this.path
+            if (prefix != null && !path.startsWith(prefix)) {
+                path = prefix + path
+            }
+            return ResourceLocation(this.namespace, "models/$path.json")
         }
 
         fun ResourceLocation.blockState(): ResourceLocation {
