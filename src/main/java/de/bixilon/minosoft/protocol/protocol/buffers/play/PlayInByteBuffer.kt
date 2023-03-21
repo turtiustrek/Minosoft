@@ -16,7 +16,8 @@ import de.bixilon.kotlinglm.vec3.Vec3d
 import de.bixilon.kotlinglm.vec3.Vec3i
 import de.bixilon.kutil.json.JsonUtil.asJsonObject
 import de.bixilon.kutil.json.JsonUtil.toMutableJsonObject
-import de.bixilon.minosoft.data.chat.signature.*
+import de.bixilon.minosoft.data.chat.signature.ChatSignatureProperties
+import de.bixilon.minosoft.data.chat.signature.MessageHeader
 import de.bixilon.minosoft.data.container.ItemStackUtil
 import de.bixilon.minosoft.data.container.stack.ItemStack
 import de.bixilon.minosoft.data.entities.entities.player.properties.PlayerProperties
@@ -131,20 +132,21 @@ class PlayInByteBuffer : InByteBuffer {
     fun readItemStack(): ItemStack? {
         if (versionId < V_1_13_2_PRE1) {
             val id = readShort().toInt()
-            if (id == -1) {
+            if (id <= 0) {
                 return null
             }
             val count = readUnsignedByte()
-            var metaData = 0
+            var meta = 0
             if (!connection.version.flattened) {
-                metaData = readUnsignedShort()
+                meta = readUnsignedShort()
             }
             val nbt = readNBTTag(versionId < V_14W28B)?.toMutableJsonObject()
+            val item = connection.registries.item.getOrNull(id shl 16 or meta) ?: return null
             return ItemStackUtil.of(
-                item = connection.registries.item[id shl 16 or metaData],
+                item = item,
                 connection = connection,
                 count = count,
-                durability = metaData,
+                durability = meta,
                 nbt = nbt ?: mutableMapOf(),
             )
         }
