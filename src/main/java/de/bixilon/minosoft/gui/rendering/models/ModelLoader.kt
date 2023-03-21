@@ -20,6 +20,7 @@ import de.bixilon.kutil.concurrent.pool.DefaultThreadPool
 import de.bixilon.kutil.latch.CountUpAndDownLatch
 import de.bixilon.minosoft.assets.util.InputStreamUtil.readJsonObject
 import de.bixilon.minosoft.data.registries.blocks.types.Block
+import de.bixilon.minosoft.data.registries.blocks.types.legacy.CustomBlockModel
 import de.bixilon.minosoft.data.registries.fluid.Fluid
 import de.bixilon.minosoft.data.registries.identified.ResourceLocation
 import de.bixilon.minosoft.data.registries.item.items.Item
@@ -52,7 +53,8 @@ class ModelLoader(
     }
 
     private fun loadBlockStates(block: Block) {
-        val blockStateJson = assetsManager[block.identifier.blockState()].readJsonObject()
+        val modelName = (if (block is CustomBlockModel) block.getModelName(context.connection.version) else block.identifier) ?: return
+        val blockStateJson = assetsManager[modelName.blockState()].readJsonObject()
 
         val model = RootModel(this, blockStateJson)
 
