@@ -335,4 +335,12 @@ class PlayInByteBuffer : InByteBuffer {
     fun readVelocity(): Vec3d {
         return Vec3d(readShort(), readShort(), readShort()) / ProtocolDefinition.VELOCITY_NETWORK_DIVIDER
     }
+
+    fun readLegacyBitSet(bytes: Int): BitSet {
+        val array = ByteArray(bytes)
+        for (index in (array.size - 1) downTo 0) { // java BitSet.valueOf is little endian
+            array[index] = readByte()
+        }
+        return BitSet.valueOf(array)
+    }
 }
