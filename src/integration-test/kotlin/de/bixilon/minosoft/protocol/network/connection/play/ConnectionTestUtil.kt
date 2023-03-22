@@ -50,6 +50,7 @@ object ConnectionTestUtil {
         connection::account.forceSet(TestAccount)
         connection::version.forceSet(version)
         connection::registries.forceSet(Registries())
+        connection.registries.updateFlattened(version.flattened)
         connection.registries.parent = if (version == IT.VERSION) IT.REGISTRIES else ITUtil.loadRegistries(version)
         connection::world.forceSet(createWorld(connection, light))
         connection::player.forceSet(LocalPlayerEntity(connection.account, connection, SignatureKeyManagement(connection, TestAccount)))
