@@ -15,8 +15,8 @@ package de.bixilon.minosoft.gui.rendering.textures
 
 import de.bixilon.kotlinglm.vec2.Vec2i
 import de.bixilon.minosoft.data.registries.identified.ResourceLocation
-import de.bixilon.minosoft.gui.rendering.system.base.texture.StaticTextureArray
 import de.bixilon.minosoft.gui.rendering.system.base.texture.TextureData
+import de.bixilon.minosoft.gui.rendering.system.base.texture.TextureManager
 import de.bixilon.minosoft.gui.rendering.system.base.texture.TextureTransparencies
 import de.bixilon.minosoft.gui.rendering.system.base.texture.texture.AbstractTexture
 import de.bixilon.minosoft.gui.rendering.world.mesh.SingleWorldMesh
@@ -57,7 +57,7 @@ object TextureUtil {
         }!!
     }
 
-    fun resolveTextures(textureArray: StaticTextureArray, textures: Map<String, String>): Map<String, AbstractTexture> {
+    fun resolveTextures(textureManager: TextureManager, textures: Map<String, String>): Map<String, AbstractTexture> {
         val resolvedTextures: MutableMap<String, AbstractTexture> = mutableMapOf()
 
         fun resolveTexture(key: String, value: String): AbstractTexture {
@@ -67,11 +67,11 @@ object TextureUtil {
             var texture: AbstractTexture? = null
             if (variable.length != value.length) {
                 // resolve variable first
-                texture = resolveTexture(variable, textures[variable]!!)
+                texture = resolveTexture(variable, textures[variable] ?: return textureManager.debugTexture)
             }
 
             if (texture == null) {
-                texture = textureArray.createTexture(value.toResourceLocation().texture())
+                texture = textureManager.staticTextures.createTexture(value.toResourceLocation().texture())
             }
 
             resolvedTextures[key] = texture
