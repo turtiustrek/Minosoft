@@ -21,6 +21,7 @@ import de.bixilon.minosoft.data.registries.blocks.state.BlockState
 import de.bixilon.minosoft.data.registries.blocks.state.builder.BlockStateBuilder
 import de.bixilon.minosoft.data.registries.blocks.state.builder.BlockStateSettings
 import de.bixilon.minosoft.data.registries.blocks.types.Block
+import de.bixilon.minosoft.data.registries.blocks.types.legacy.FlatteningRenamedModel
 import de.bixilon.minosoft.data.registries.blocks.types.properties.DyedBlock
 import de.bixilon.minosoft.data.registries.blocks.types.properties.item.BlockWithItem
 import de.bixilon.minosoft.data.registries.blocks.types.properties.physics.CustomDiggingBlock
@@ -127,8 +128,9 @@ abstract class WoolBlock(identifier: ResourceLocation, settings: BlockSettings) 
         }
     }
 
-    open class LightGrayWool(identifier: ResourceLocation = this.identifier, settings: BlockSettings) : WoolBlock(identifier, settings) {
+    open class LightGrayWool(identifier: ResourceLocation = this.identifier, settings: BlockSettings) : WoolBlock(identifier, settings), FlatteningRenamedModel {
         override val color: DyeColors get() = DyeColors.LIGHT_GRAY
+        override val legacyModelName = minecraft("silver_wool")
 
         companion object : BlockFactory<LightGrayWool> {
             override val identifier = minecraft("light_gray_wool")

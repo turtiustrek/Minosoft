@@ -20,7 +20,7 @@ import de.bixilon.minosoft.gui.rendering.models.unbaked.UnbakedModel
 
 interface RootModel {
 
-    fun getModelForState(blockState: BlockState): UnbakedModel
+    fun getModelForState(blockState: BlockState): UnbakedModel?
 
     companion object {
         operator fun invoke(modeLoader: ModelLoader, data: Map<String, Any>): RootModel {

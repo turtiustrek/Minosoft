@@ -178,9 +178,10 @@ class UnbakedBlockStateModel(
     }
 
     companion object {
-        operator fun invoke(modeLoader: ModelLoader, data: Map<String, Any>): UnbakedBlockStateModel {
+        operator fun invoke(modeLoader: ModelLoader, data: Map<String, Any>): UnbakedBlockStateModel? {
+            val model = modeLoader.loadBlockModel(data["model"].toResourceLocation()) ?: return null
             return UnbakedBlockStateModel(
-                model = modeLoader.loadBlockModel(data["model"].toResourceLocation()).unsafeCast(),
+                model = model.unsafeCast(),
                 rotation = data.toVec2iN(),
                 uvLock = data["uvlock"]?.toBoolean() ?: false,
                 weight = data["weight"]?.toInt() ?: 1,

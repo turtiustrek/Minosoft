@@ -102,9 +102,9 @@ class MultipartRootModel(
                 val applyData = modelData["apply"]!!
                 val apply: MutableSet<AbstractUnbakedBlockModel> = mutableSetOf()
                 if (applyData is Map<*, *>) {
-                    apply += UnbakedBlockStateModel(modelLoader, applyData.unsafeCast())
+                    apply += UnbakedBlockStateModel(modelLoader, applyData.unsafeCast()) ?: continue
                 } else if (applyData is List<*>) {
-                    apply += WeightedUnbakedBlockStateModel(modelLoader, applyData.unsafeCast())
+                    apply += WeightedUnbakedBlockStateModel(modelLoader, applyData.unsafeCast()) ?: continue
                 }
 
                 modelData["when"]?.toJsonObject()?.let {

@@ -19,6 +19,9 @@ import de.bixilon.minosoft.data.registries.blocks.state.BlockState
 import de.bixilon.minosoft.data.registries.blocks.state.PropertyBlockState
 import de.bixilon.minosoft.gui.rendering.models.ModelLoader
 import de.bixilon.minosoft.gui.rendering.models.unbaked.UnbakedModel
+import de.bixilon.minosoft.util.logging.Log
+import de.bixilon.minosoft.util.logging.LogLevels
+import de.bixilon.minosoft.util.logging.LogMessageType
 
 class SimpleRootModel(
     private val conditions: Map<Map<BlockProperties, Any>, UnbakedModel>,
@@ -39,13 +42,14 @@ class SimpleRootModel(
         return true
     }
 
-    override fun getModelForState(blockState: BlockState): UnbakedModel {
+    override fun getModelForState(blockState: BlockState): UnbakedModel? {
         for ((condition, model) in conditions) {
             if (condition.matches(blockState)) {
                 return model
             }
         }
-        TODO("Could not find model for $blockState")
+        Log.log(LogMessageType.VERSION_LOADING, LogLevels.VERBOSE) { "Can not find model for $blockState" }
+        return null
     }
 
     companion object {
@@ -59,6 +63,7 @@ class SimpleRootModel(
                 if (conditionString.isNotBlank() && conditionString != "normal") {
                     for (pair in conditionString.split(",")) {
                         val (propertyName, propertyStringValue) = pair.split("=")
+                        if (propertyName == "wet" || propertyStringValue == "none" || propertyName == "variant" || propertyStringValue == "down_z" || propertyStringValue == "down_x" || propertyStringValue == "down_y" || propertyStringValue == "up_z" || propertyStringValue == "up_x" || propertyStringValue == "up_y" || propertyName == "contents" || propertyName == "damage") continue // TODO
 
                         val (property, propertyValue) = BlockProperties.parseProperty(propertyName, propertyStringValue)
 
@@ -72,7 +77,7 @@ class SimpleRootModel(
                     else -> TODO("Can not create model: $value")
                 }
 
-                conditions[condition] = model
+                conditions[condition] = model ?: continue
             }
 
             return SimpleRootModel(conditions)

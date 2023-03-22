@@ -54,20 +54,28 @@ class ModelLoader(
 
     private fun loadBlockStates(block: Block) {
         val modelName = (if (block is CustomBlockModel) block.getModelName(context.connection.version) else block.identifier) ?: return
-        val blockStateJson = assetsManager[modelName.blockState()].readJsonObject()
+        val blockStateJson = assetsManager.getOrNull(modelName.blockState())?.readJsonObject()
+        if (blockStateJson == null) {
+            Log.log(LogMessageType.VERSION_LOADING, LogLevels.VERBOSE) { "Can not find block state model $modelName!" }
+            return
+        }
 
         val model = RootModel(this, blockStateJson)
 
 
         for (state in block.states) {
-            state.blockModel = model.getModelForState(state).bake(context).unsafeCast()
+            state.blockModel = model.getModelForState(state)?.bake(context)?.unsafeCast() ?: continue
         }
     }
 
-    fun loadBlockModel(name: ResourceLocation): GenericUnbakedModel {
+    fun loadBlockModel(name: ResourceLocation): GenericUnbakedModel? {
         unbakedBlockModels[name]?.let { return it.unsafeCast() }
         val modelName = if (context.connection.version.flattened || name.path.startsWith("block/")) name.model() else name.model("block/")
-        val data = assetsManager[modelName].readJsonObject()
+        val data = assetsManager.getOrNull(modelName)?.readJsonObject()
+        if (data == null) {
+            Log.log(LogMessageType.VERSION_LOADING, LogLevels.VERBOSE) { "Can not find block model $modelName!" }
+            return null
+        }
 
         val parent = data["parent"]?.toResourceLocation()?.let { loadBlockModel(it) }
 
